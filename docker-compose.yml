@@ -27,7 +27,7 @@ services:
     depends_on:
       - execution
     ports:
-      - "127.0.0.1:7545:9545" # RPC
+      - "127.0.0.1:7545:8545" # RPC
       - "9222:9222" # P2P TCP
       - "9222:9222/udp" # P2P UDP
       - "127.0.0.1:7300:7300" # metrics - change 127.0.0.1 to tailnet ip for rain oservibility victorialogs

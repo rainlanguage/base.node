@@ -1,0 +1,13 @@
+services:
+
+  rss-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rss-bot
+    environment:
+      - RSS_BOT_URL=${RSS_BOT_URL}
+      - RSS_BOT_TG_BOT_TOKEN=${RSS_BOT_TG_BOT_TOKEN}
+      - RSS_BOT_TG_CHANNEL_ID=${RSS_BOT_TG_CHANNEL_ID}
+      - RSS_BOT_POLL_INTERVAL=${RSS_BOT_POLL_INTERVAL}
+    restart: unless-stopped

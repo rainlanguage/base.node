@@ -1,0 +1,37 @@
+# Public operator node. `docker compose up` pulls ghcr.io/base/node.
+# Pin with NODE_TAG=vX.Y.Z.
+services:
+  execution:
+    image: ghcr.io/base/node:${NODE_TAG:-latest}
+    container_name: execution
+    restart: unless-stopped
+    logging:
+      driver: local
+    ports:
+      - "127.0.0.1:8545:8545" # RPC
+      - "127.0.0.1:8546:8546" # websocket
+      - "127.0.0.1:7301:6060" # metrics - change 127.0.0.1 to tailnet ip for rain oservibility victorialogs
+      - "30303:30303" # P2P TCP
+      - "30303:30303/udp" # P2P UDP
+    command: ["bash", "./execution-entrypoint"]
+    volumes:
+      - ${HOST_DATA_DIR:-./reth-data}:/data
+    env_file:
+      - ${NETWORK_ENV:-.env.mainnet} # Use .env.mainnet by default, override with .env.sepolia for testnet
+  node:
+    image: ghcr.io/base/node:${NODE_TAG:-latest}
+    container_name: consensus
+    restart: unless-stopped
+    logging:
+      driver: local
+    depends_on:
+      - execution
+    ports:
+      - "127.0.0.1:7545:9545" # RPC
+      - "9222:9222" # P2P TCP
+      - "9222:9222/udp" # P2P UDP
+      - "127.0.0.1:7300:7300" # metrics - change 127.0.0.1 to tailnet ip for rain oservibility victorialogs
+      - "127.0.0.1:6060:6060" # pprof - change 127.0.0.1 to tailnet ip for rain oservibility victorialogs
+    command: ["bash", "./consensus-entrypoint"]
+    env_file:
+      - ${NETWORK_ENV:-.env.mainnet} # Use .env.mainnet by default, override with .env.sepolia for testnet
